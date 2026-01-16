@@ -1,0 +1,566 @@
+<!DOCTYPE html>
+<html lang="ru">
+  <head>
+    <base target="_top" />
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>iPhone Classic</title>
+    <style>
+      :root {
+        --glass: rgba(255, 255, 255, 0.12);
+        --dark: #0f0f10;
+        --iphone-black: #1a1a1a;
+        --silver: #e6e6e6;
+        --screen-border: #222;
+        --accent: #4da3ff;
+        --wallpaper: linear-gradient(180deg, #0c1f33 0%, #18406a 40%, #3768a8 100%);
+      }
+
+      * {
+        box-sizing: border-box;
+        font-family: "Helvetica Neue", "Arial", sans-serif;
+      }
+
+      body {
+        margin: 0;
+        min-height: 100vh;
+        display: grid;
+        place-items: center;
+        background: radial-gradient(circle at top, #2f2f2f, #0c0c0c 70%);
+        color: #fff;
+      }
+
+      .iphone-frame {
+        width: min(420px, 92vw);
+        aspect-ratio: 9 / 16;
+        border-radius: 42px;
+        background: linear-gradient(140deg, #2a2a2a, #0e0e0e 55%, #1d1d1d 100%);
+        padding: 18px;
+        position: relative;
+        box-shadow: 0 30px 60px rgba(0, 0, 0, 0.6);
+      }
+
+      .iphone-bezel {
+        width: 100%;
+        height: 100%;
+        border-radius: 30px;
+        padding: 10px;
+        background: #0b0b0b;
+        border: 1px solid #333;
+      }
+
+      .iphone-screen {
+        height: 100%;
+        border-radius: 22px;
+        background: var(--wallpaper);
+        position: relative;
+        overflow: hidden;
+        display: flex;
+        flex-direction: column;
+      }
+
+      .status-bar {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 10px 16px 8px;
+        font-size: 12px;
+        text-transform: uppercase;
+        letter-spacing: 0.12em;
+        color: rgba(255, 255, 255, 0.85);
+      }
+
+      .status-left,
+      .status-right {
+        display: flex;
+        gap: 10px;
+        align-items: center;
+      }
+
+      .status-signal {
+        display: flex;
+        gap: 2px;
+      }
+
+      .status-signal span {
+        width: 3px;
+        border-radius: 2px;
+        background: rgba(255, 255, 255, 0.9);
+      }
+
+      .status-signal span:nth-child(1) {
+        height: 4px;
+        opacity: 0.5;
+      }
+
+      .status-signal span:nth-child(2) {
+        height: 6px;
+        opacity: 0.7;
+      }
+
+      .status-signal span:nth-child(3) {
+        height: 8px;
+      }
+
+      .status-signal span:nth-child(4) {
+        height: 10px;
+      }
+
+      .home-grid {
+        flex: 1;
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 18px 12px;
+        padding: 14px 22px 90px;
+      }
+
+      .app-icon {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 8px;
+        cursor: pointer;
+        user-select: none;
+      }
+
+      .icon-tile {
+        width: 60px;
+        height: 60px;
+        border-radius: 16px;
+        display: grid;
+        place-items: center;
+        font-weight: 600;
+        font-size: 18px;
+        color: #fff;
+        box-shadow: inset 0 2px 4px rgba(255, 255, 255, 0.2), 0 8px 16px rgba(0, 0, 0, 0.3);
+      }
+
+      .icon-label {
+        font-size: 12px;
+        color: rgba(255, 255, 255, 0.85);
+      }
+
+      .dock {
+        position: absolute;
+        left: 16px;
+        right: 16px;
+        bottom: 18px;
+        height: 70px;
+        border-radius: 22px;
+        background: rgba(255, 255, 255, 0.15);
+        backdrop-filter: blur(6px);
+        display: flex;
+        justify-content: space-evenly;
+        align-items: center;
+        box-shadow: inset 0 1px 2px rgba(255, 255, 255, 0.4);
+      }
+
+      .home-indicator {
+        position: absolute;
+        bottom: 8px;
+        left: 50%;
+        transform: translateX(-50%);
+        width: 140px;
+        height: 6px;
+        border-radius: 999px;
+        background: rgba(255, 255, 255, 0.6);
+      }
+
+      .app-screen {
+        position: absolute;
+        inset: 0;
+        background: #0b0b0c;
+        display: flex;
+        flex-direction: column;
+        opacity: 0;
+        pointer-events: none;
+        transform: translateY(10px);
+        transition: 0.25s ease;
+      }
+
+      .app-screen.active {
+        opacity: 1;
+        pointer-events: auto;
+        transform: translateY(0);
+      }
+
+      .app-header {
+        padding: 16px 18px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        background: linear-gradient(180deg, #1b1b1d, #0c0c0d);
+        border-bottom: 1px solid #222;
+      }
+
+      .app-title {
+        font-weight: 600;
+        font-size: 16px;
+      }
+
+      .app-content {
+        flex: 1;
+        padding: 18px;
+        overflow-y: auto;
+        background: #101114;
+      }
+
+      .btn {
+        border: none;
+        border-radius: 12px;
+        padding: 8px 14px;
+        background: #2b2d33;
+        color: #fff;
+        cursor: pointer;
+      }
+
+      .list {
+        display: grid;
+        gap: 12px;
+      }
+
+      .card {
+        padding: 12px;
+        border-radius: 12px;
+        background: #1b1c22;
+        border: 1px solid #2c2d33;
+      }
+
+      .card h4 {
+        margin: 0 0 6px;
+        font-size: 14px;
+      }
+
+      .card p {
+        margin: 0;
+        font-size: 12px;
+        color: rgba(255, 255, 255, 0.7);
+        line-height: 1.4;
+      }
+
+      .dial-pad {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 12px;
+      }
+
+      .dial-pad button {
+        padding: 14px 0;
+        background: #1b1c22;
+        border-radius: 12px;
+        border: 1px solid #2c2d33;
+        color: #fff;
+        font-size: 16px;
+      }
+
+      .message-preview {
+        background: #182a3d;
+        border-radius: 16px;
+        padding: 12px;
+        margin-bottom: 12px;
+      }
+
+      .message-preview strong {
+        display: block;
+        font-size: 13px;
+        margin-bottom: 4px;
+      }
+
+      .safari-card {
+        background: #fff;
+        color: #111;
+        border-radius: 16px;
+        padding: 16px;
+      }
+
+      .safari-card h3 {
+        margin: 0 0 10px;
+      }
+
+      .music-list {
+        display: grid;
+        gap: 10px;
+      }
+
+      .music-item {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        background: #1b1c22;
+        border: 1px solid #2c2d33;
+        border-radius: 12px;
+        padding: 10px 12px;
+      }
+
+      .notes-empty {
+        padding: 16px;
+        border-radius: 12px;
+        background: #1b1c22;
+        border: 1px dashed #2c2d33;
+        color: rgba(255, 255, 255, 0.7);
+        font-size: 13px;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="iphone-frame">
+      <div class="iphone-bezel">
+        <div class="iphone-screen" id="home">
+          <div class="status-bar">
+            <div class="status-left">
+              <div class="status-signal">
+                <span></span><span></span><span></span><span></span>
+              </div>
+              <span>Orange</span>
+            </div>
+            <div class="status-right">
+              <span id="clock">9:41</span>
+              <span>100%</span>
+            </div>
+          </div>
+
+          <div class="home-grid">
+            <div class="app-icon" data-app="phone">
+              <div class="icon-tile" style="background: linear-gradient(160deg, #50c878, #1f6f40);">📞</div>
+              <div class="icon-label">Телефон</div>
+            </div>
+            <div class="app-icon" data-app="messages">
+              <div class="icon-tile" style="background: linear-gradient(160deg, #7dd3fc, #2563eb);">💬</div>
+              <div class="icon-label">SMS</div>
+            </div>
+            <div class="app-icon" data-app="safari">
+              <div class="icon-tile" style="background: linear-gradient(160deg, #34d399, #0ea5e9);">🌐</div>
+              <div class="icon-label">Safari</div>
+            </div>
+            <div class="app-icon" data-app="notes">
+              <div class="icon-tile" style="background: linear-gradient(160deg, #fcd34d, #f59e0b);">📝</div>
+              <div class="icon-label">Заметки</div>
+            </div>
+            <div class="app-icon" data-app="ipod">
+              <div class="icon-tile" style="background: linear-gradient(160deg, #f472b6, #9333ea);">🎵</div>
+              <div class="icon-label">iPod</div>
+            </div>
+            <div class="app-icon" data-app="settings">
+              <div class="icon-tile" style="background: linear-gradient(160deg, #9ca3af, #4b5563);">⚙️</div>
+              <div class="icon-label">Настройки</div>
+            </div>
+          </div>
+
+          <div class="dock">
+            <div class="app-icon" data-app="phone">
+              <div class="icon-tile" style="background: linear-gradient(160deg, #50c878, #1f6f40);">📞</div>
+            </div>
+            <div class="app-icon" data-app="messages">
+              <div class="icon-tile" style="background: linear-gradient(160deg, #7dd3fc, #2563eb);">💬</div>
+            </div>
+            <div class="app-icon" data-app="safari">
+              <div class="icon-tile" style="background: linear-gradient(160deg, #34d399, #0ea5e9);">🌐</div>
+            </div>
+            <div class="app-icon" data-app="ipod">
+              <div class="icon-tile" style="background: linear-gradient(160deg, #f472b6, #9333ea);">🎵</div>
+            </div>
+          </div>
+
+          <div class="home-indicator"></div>
+        </div>
+
+        <div class="iphone-screen app-screen" id="app-phone">
+          <div class="app-header">
+            <button class="btn" data-close>Назад</button>
+            <div class="app-title">Телефон</div>
+            <span></span>
+          </div>
+          <div class="app-content">
+            <div class="card" id="dial-display">+7 (___) ___-__-__</div>
+            <div class="dial-pad" id="dial-pad">
+              <button>1</button><button>2</button><button>3</button>
+              <button>4</button><button>5</button><button>6</button>
+              <button>7</button><button>8</button><button>9</button>
+              <button>*</button><button>0</button><button>#</button>
+            </div>
+          </div>
+        </div>
+
+        <div class="iphone-screen app-screen" id="app-messages">
+          <div class="app-header">
+            <button class="btn" data-close>Назад</button>
+            <div class="app-title">SMS</div>
+            <button class="btn" id="new-message">Новое</button>
+          </div>
+          <div class="app-content">
+            <div class="message-preview">
+              <strong>Мама</strong>
+              Ты уже доехал? 📱
+            </div>
+            <div class="message-preview">
+              <strong>Алексей</strong>
+              Встретимся в 18:00 у метро.
+            </div>
+            <div class="message-preview">
+              <strong>iPhone</strong>
+              Добро пожаловать в iOS 1.0 ✨
+            </div>
+          </div>
+        </div>
+
+        <div class="iphone-screen app-screen" id="app-safari">
+          <div class="app-header">
+            <button class="btn" data-close>Назад</button>
+            <div class="app-title">Safari</div>
+            <span></span>
+          </div>
+          <div class="app-content">
+            <div class="safari-card">
+              <h3>iPhone Web</h3>
+              <p>Имитация браузера iPhone 2007 года. Добавьте сюда ссылку или описание своего сервиса.</p>
+              <button class="btn" id="open-link">Открыть Apple.com</button>
+            </div>
+          </div>
+        </div>
+
+        <div class="iphone-screen app-screen" id="app-notes">
+          <div class="app-header">
+            <button class="btn" data-close>Назад</button>
+            <div class="app-title">Заметки</div>
+            <button class="btn" id="refresh-notes">Обновить</button>
+          </div>
+          <div class="app-content">
+            <div class="list" id="notes-list">
+              <div class="notes-empty">Здесь появятся заметки из Google Sheets (лист "Notes").</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="iphone-screen app-screen" id="app-ipod">
+          <div class="app-header">
+            <button class="btn" data-close>Назад</button>
+            <div class="app-title">iPod</div>
+            <span></span>
+          </div>
+          <div class="app-content">
+            <div class="music-list">
+              <div class="music-item">
+                <span>Air - La Femme d'Argent</span>
+                <span>▶</span>
+              </div>
+              <div class="music-item">
+                <span>Daft Punk - One More Time</span>
+                <span>▶</span>
+              </div>
+              <div class="music-item">
+                <span>Moby - Porcelain</span>
+                <span>▶</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="iphone-screen app-screen" id="app-settings">
+          <div class="app-header">
+            <button class="btn" data-close>Назад</button>
+            <div class="app-title">Настройки</div>
+            <span></span>
+          </div>
+          <div class="app-content">
+            <div class="list">
+              <div class="card">
+                <h4>Wi-Fi</h4>
+                <p>Подключено: Orange LTE</p>
+              </div>
+              <div class="card">
+                <h4>Bluetooth</h4>
+                <p>Включен</p>
+              </div>
+              <div class="card">
+                <h4>Обои</h4>
+                <p>Классический градиент iPhone</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <script>
+      const screens = document.querySelectorAll('.app-screen');
+      const appIcons = document.querySelectorAll('.app-icon');
+      const closeButtons = document.querySelectorAll('[data-close]');
+      const clock = document.getElementById('clock');
+      const dialPad = document.getElementById('dial-pad');
+      const dialDisplay = document.getElementById('dial-display');
+      const notesList = document.getElementById('notes-list');
+      const refreshNotes = document.getElementById('refresh-notes');
+
+      const updateClock = () => {
+        const now = new Date();
+        const hours = String(now.getHours()).padStart(2, '0');
+        const minutes = String(now.getMinutes()).padStart(2, '0');
+        clock.textContent = `${hours}:${minutes}`;
+      };
+
+      updateClock();
+      setInterval(updateClock, 60000);
+
+      const openApp = (app) => {
+        screens.forEach((screen) => {
+          screen.classList.toggle('active', screen.id === `app-${app}`);
+        });
+      };
+
+      const closeApps = () => {
+        screens.forEach((screen) => screen.classList.remove('active'));
+      };
+
+      appIcons.forEach((icon) => {
+        icon.addEventListener('click', () => {
+          openApp(icon.dataset.app);
+        });
+      });
+
+      closeButtons.forEach((btn) => {
+        btn.addEventListener('click', closeApps);
+      });
+
+      if (dialPad) {
+        dialPad.addEventListener('click', (event) => {
+          if (event.target.tagName !== 'BUTTON') return;
+          const value = event.target.textContent;
+          dialDisplay.textContent = `${dialDisplay.textContent}${value}`.slice(0, 18);
+        });
+      }
+
+      const renderNotes = (notes) => {
+        notesList.innerHTML = '';
+        if (!notes.length) {
+          notesList.innerHTML = '<div class="notes-empty">Заметок пока нет. Добавьте строки в лист Notes.</div>';
+          return;
+        }
+        notes.forEach((note) => {
+          const card = document.createElement('div');
+          card.className = 'card';
+          card.innerHTML = `<h4>${note.title}</h4><p>${note.body}</p>`;
+          notesList.appendChild(card);
+        });
+      };
+
+      const loadNotes = () => {
+        notesList.innerHTML = '<div class="notes-empty">Загрузка...</div>';
+        google.script.run.withSuccessHandler((response) => {
+          if (!response.ok) {
+            notesList.innerHTML = `<div class="notes-empty">${response.message}</div>`;
+            return;
+          }
+          renderNotes(response.rows);
+        }).getNotes();
+      };
+
+      if (refreshNotes) {
+        refreshNotes.addEventListener('click', loadNotes);
+      }
+
+      document.getElementById('open-link').addEventListener('click', () => {
+        window.open('https://www.apple.com', '_blank');
+      });
+    </script>
+  </body>
+</html>
